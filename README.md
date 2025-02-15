@@ -17,3 +17,4 @@ The project was completed using VS Code with a WSL (Windows Subsystem for Linux)
 
 
 ## Installation Instructions
+### Install WSL (for Windows users)
