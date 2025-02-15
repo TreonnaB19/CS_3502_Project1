@@ -44,6 +44,7 @@ To compile this project, use the following steps:
 #### 3. Compile Project B - IPC:
    `gcc -o ipc ipc.c`
 ### Execution
+In the terminal:
 #### 1. Run Multi-Threading Program:
     `./threading`
 #### 2. Run IPC Program:
