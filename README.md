@@ -12,12 +12,4 @@ The project was completed using **VS Code** with a **WSL (Windows Subsystem for 
 
 ## Building and Running the Program
 
-### **Step 1: Clone the Repository**
-```sh
-git clone https://github.com/yourusername/project-name.git
-cd project-name
-sudo apt update && sudo apt install gcc build-essential
-gcc -pthread threading.c -o threading
-gcc ipc.c -o ipc
-./threading
-./ipc
+
