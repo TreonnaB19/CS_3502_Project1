@@ -1,55 +1,35 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 
-
 int main() {
-    int parentToChild[2], childToParent[2]; // Two pipes
-    char parentMsg[] = "Hello from Parent!";
-    char childMsg[] = "Hello from Child!";
+    int fd[2];
+    pid_t pid;
     char buffer[50];
-
-    // Create pipes
-    if (pipe(parentToChild) == -1 || pipe(childToParent) == -1) {
+    
+    if (pipe(fd) == -1) {
         perror("Pipe failed");
-        exit(1);
+        return 1;
     }
 
-    pid_t pid = fork(); // Create child process
+    pid = fork();
 
-    if (pid < 0) {  // Fork failed
+    if (pid < 0) {
         perror("Fork failed");
-        exit(1);
+        return 1;
     }
 
-    if (pid == 0) {  // Child process
-        close(parentToChild[1]);  // Close write end of parent->child
-        close(childToParent[0]);  // Close read end of child->parent
-
-        // Read message from parent
-        read(parentToChild[0], buffer, sizeof(buffer));
+    if (pid > 0) { // Parent Process
+        close(fd[0]); // Close unused read end
+        char message[] = "Hello from parent!";
+        write(fd[1], message, strlen(message) + 1);
+        close(fd[1]); // Close write end after writing
+    } else { // Child Process
+        close(fd[1]); // Close unused write end
+        read(fd[0], buffer, sizeof(buffer));
         printf("Child received: %s\n", buffer);
-
-        // Send message back to parent
-        write(childToParent[1], childMsg, strlen(childMsg) + 1);
-
-        close(parentToChild[0]);  // Close read end of parent->child
-        close(childToParent[1]);  // Close write end of child->parent
-    } else {  // Parent process
-        close(parentToChild[0]);  // Close read end of parent->child
-        close(childToParent[1]);  // Close write end of child->parent
-
-        // Send message to child
-        write(parentToChild[1], parentMsg, strlen(parentMsg) + 1);
-
-        // Read response from child
-        read(childToParent[0], buffer, sizeof(buffer));
-        printf("Parent received: %s\n", buffer);
-
-        close(parentToChild[1]);  // Close write end of parent->child
-        close(childToParent[0]);  // Close read end of child->parent
+        close(fd[0]); // Close read end after reading
     }
 
     return 0;
