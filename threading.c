@@ -1,27 +1,28 @@
 #include <stdio.h>
 #include <pthread.h>
-#include <unistd.h>  // For sleep()
+#include <unistd.h>
 
-void *print_message(void *arg) {
-    int thread_num = *((int *)arg);
-    printf("Hello from Thread %d (ID: %ld)\n", thread_num, pthread_self());
+#define NUM_THREADS 3
+
+void* print_message(void* thread_id) {
+    long tid = (long)thread_id;
+    printf("Thread %ld is running\n", tid);
+    sleep(1); // Simulate work
+    printf("Thread %ld has finished execution\n", tid);
     return NULL;
 }
 
 int main() {
-    pthread_t threads[3];
-    int thread_ids[3] = {1, 2, 3};
+    pthread_t threads[NUM_THREADS];
 
-    // Creating 3 threads
-    for (int i = 0; i < 3; i++) {
-        pthread_create(&threads[i], NULL, print_message, &thread_ids[i]);
+    for (long i = 0; i < NUM_THREADS; i++) {
+        pthread_create(&threads[i], NULL, print_message, (void*)i);
     }
 
-    // Waiting for all threads to finish
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(threads[i], NULL);
     }
 
-    printf("All threads have finished execution.\n");
+    printf("All threads completed execution.\n");
     return 0;
 }
